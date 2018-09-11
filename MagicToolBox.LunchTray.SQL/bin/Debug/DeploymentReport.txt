@@ -1,0 +1,25 @@
+﻿** Highlights
+     Tables that will be rebuilt
+       None
+     Clustered indexes that will be dropped
+       None
+     Clustered indexes that will be created
+       None
+     Possible data issues
+       None
+
+** User actions
+     Create
+       [tool] (Schema)
+       [dbo].[SessionEventLog] (Table)
+       [dbo].[SessionEventTypes] (Table)
+       [dbo].[DF_SessionEventLog_Billable] (Default Constraint)
+       [dbo].[DF_SessionEventLog_Start] (Default Constraint)
+       [dbo].[DF_SessionEventTypes_Billable] (Default Constraint)
+       [dbo].[FK_SessionEventLog_EventTypeID] (Foreign Key)
+       [tool].[FormatText] (Function)
+       [tool].[FormatString] (Function)
+       [tool].[FormatString1] (Function)
+       [dbo].[SessionEventLog_Insert] (Procedure)
+
+** Supporting actions

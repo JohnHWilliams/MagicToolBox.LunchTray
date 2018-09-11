@@ -1,0 +1,85 @@
+9/11/2018 1:01:49 PM	This log contains information about the import schema operation into project 'MagicToolBox.LunchTray.SQL' on computer 'CE008487' by user 'jwilliams'.
+9/11/2018 1:01:49 PM	Import of database schema has started.
+9/11/2018 1:01:54 PM	Gathering database credentials
+9/11/2018 1:01:54 PM	Gathering database options
+9/11/2018 1:01:54 PM	Gathering generic database scoped configuration option
+9/11/2018 1:01:54 PM	Gathering users
+9/11/2018 1:01:54 PM	Gathering roles
+9/11/2018 1:01:54 PM	Gathering application roles
+9/11/2018 1:01:54 PM	Gathering role memberships
+9/11/2018 1:01:54 PM	Gathering filegroups
+9/11/2018 1:01:54 PM	Gathering full-text catalogs
+9/11/2018 1:01:54 PM	Gathering assemblies
+9/11/2018 1:01:54 PM	Gathering certificates
+9/11/2018 1:01:54 PM	Gathering asymmetric keys
+9/11/2018 1:01:54 PM	Gathering symmetric keys
+9/11/2018 1:01:54 PM	Gathering encrypted symmetric keys
+9/11/2018 1:01:54 PM	Gathering schemas
+9/11/2018 1:01:54 PM	Gathering XML schema collections
+9/11/2018 1:01:54 PM	Gathering user-defined data types
+9/11/2018 1:01:54 PM	Gathering user-defined types
+9/11/2018 1:01:54 PM	Gathering table types
+9/11/2018 1:01:54 PM	Gathering unique keys for table types
+9/11/2018 1:01:54 PM	Gathering primary keys for table types
+9/11/2018 1:01:54 PM	Gathering indexes for table types
+9/11/2018 1:01:54 PM	Gathering check constraints for table types
+9/11/2018 1:01:54 PM	Gathering default constraints for table types
+9/11/2018 1:01:54 PM	Gathering partition functions
+9/11/2018 1:01:54 PM	Gathering partition schemes
+9/11/2018 1:01:54 PM	Gathering functions
+9/11/2018 1:01:54 PM	Gathering encrypted functions
+9/11/2018 1:01:54 PM	Gathering aggregates
+9/11/2018 1:01:54 PM	Gathering procedures
+9/11/2018 1:01:54 PM	Gathering encrypted procedures
+9/11/2018 1:01:54 PM	Gathering tables
+9/11/2018 1:01:54 PM	Gathering primary keys
+9/11/2018 1:01:54 PM	Gathering unique constraints
+9/11/2018 1:01:54 PM	Gathering foreign keys
+9/11/2018 1:01:54 PM	Gathering default constraints
+9/11/2018 1:01:54 PM	Gathering check constraints
+9/11/2018 1:01:54 PM	Gathering views
+9/11/2018 1:01:54 PM	Gathering encrypted views
+9/11/2018 1:01:54 PM	Gathering indexes
+9/11/2018 1:01:54 PM	Gathering statistics
+9/11/2018 1:01:54 PM	Gathering full-text index stoplists
+9/11/2018 1:01:54 PM	Gathering search property lists
+9/11/2018 1:01:54 PM	Gathering search properties
+9/11/2018 1:01:54 PM	Gathering full-text indexes
+9/11/2018 1:01:54 PM	Gathering column store indexes
+9/11/2018 1:01:54 PM	Gathering spatial indexes
+9/11/2018 1:01:54 PM	Gathering XML indexes
+9/11/2018 1:01:54 PM	Gathering Selective XML indexes
+9/11/2018 1:01:54 PM	Gathering encrypted triggers
+9/11/2018 1:01:54 PM	Gathering triggers
+9/11/2018 1:01:54 PM	Gathering encrypted and clr ddl triggers
+9/11/2018 1:01:54 PM	Gathering ddl triggers
+9/11/2018 1:01:54 PM	Gathering synonyms
+9/11/2018 1:01:54 PM	Gathering defaults
+9/11/2018 1:01:54 PM	Gathering data constraint uddt bindings
+9/11/2018 1:01:54 PM	Gathering rules
+9/11/2018 1:01:54 PM	Gathering data constraint uddt bindings
+9/11/2018 1:01:54 PM	Gathering message types
+9/11/2018 1:01:54 PM	Gathering queues
+9/11/2018 1:01:54 PM	Gathering contracts
+9/11/2018 1:01:54 PM	Gathering services
+9/11/2018 1:01:54 PM	Gathering event notifications
+9/11/2018 1:01:54 PM	Gathering remote service bindings
+9/11/2018 1:01:54 PM	Gathering broker priorities
+9/11/2018 1:01:54 PM	Gathering signatures
+9/11/2018 1:01:54 PM	Gathering data compression options
+9/11/2018 1:01:54 PM	Gathering sequence types
+9/11/2018 1:01:54 PM	Gathering security policies
+9/11/2018 1:01:54 PM	Gather column encryption keys
+9/11/2018 1:01:54 PM	Gathering column master keys
+9/11/2018 1:01:54 PM	Gathering external data sources
+9/11/2018 1:01:54 PM	Gathering external file formats
+9/11/2018 1:01:54 PM	Gathering external tables
+9/11/2018 1:01:54 PM	Gathering extended properties
+9/11/2018 1:01:54 PM	Gathering credentials
+9/11/2018 1:01:54 PM	Gathering logins
+9/11/2018 1:01:54 PM	Gathering server audits
+9/11/2018 1:01:54 PM	Scanning project for duplicate elements
+9/11/2018 1:01:54 PM	Finished duplicate element processing
+9/11/2018 1:01:55 PM	Finished importing database.
+9/11/2018 1:01:55 PM	A summary of the import was saved to the following location: C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQL\Import Schema Logs\MagicToolBox.LunchTr_20180911050149.log
+9/11/2018 1:01:55 PM	Click Finish to continue...

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2016
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicToolBox.LunchTray", "MagicToolBox.LunchTray.csproj", "{88DCC350-EDA7-4599-8ADE-8230F0B73A16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicToolBox.LunchTray", "MagicToolBox.LunchTray\MagicToolBox.LunchTray.csproj", "{88DCC350-EDA7-4599-8ADE-8230F0B73A16}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MagicToolBox.LunchTray.SQL", "MagicToolBox.LunchTray.SQL\MagicToolBox.LunchTray.SQL.sqlproj", "{90FA1C63-C11C-4807-AB5E-4ACDD97323E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,12 @@ Global
 		{88DCC350-EDA7-4599-8ADE-8230F0B73A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88DCC350-EDA7-4599-8ADE-8230F0B73A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88DCC350-EDA7-4599-8ADE-8230F0B73A16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90FA1C63-C11C-4807-AB5E-4ACDD97323E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90FA1C63-C11C-4807-AB5E-4ACDD97323E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90FA1C63-C11C-4807-AB5E-4ACDD97323E4}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{90FA1C63-C11C-4807-AB5E-4ACDD97323E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90FA1C63-C11C-4807-AB5E-4ACDD97323E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90FA1C63-C11C-4807-AB5E-4ACDD97323E4}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
