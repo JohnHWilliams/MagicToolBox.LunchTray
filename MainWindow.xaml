@@ -1,0 +1,60 @@
+﻿<Window x:Name="wpfMainWindow" x:Class="MagicToolBox.LunchTray.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:commands="clr-namespace:MagicToolBox.LunchTray.Commands"
+        mc:Ignorable="d"
+        Title="Lunch Tray - Automatic Work &amp; Break Tracking" Height="450" Width="800" ScrollViewer.VerticalScrollBarVisibility="Auto" WindowStyle="ThreeDBorderWindow" WindowStartupLocation="CenterScreen" Loaded="wpfMainWindow_Loaded" Closing="wpfMainWindow_Closing" Closed="wpfMainWindow_Closed" Icon="Images/ClockOut32.ico">
+    <Grid>
+        <tb:TaskbarIcon x:Name="TrayIcon"
+                        IconSource="/Images/ClockOut32.ico"
+                        TrayContextMenuOpen="TrayIcon_TrayContextMenuOpen"
+                        PreviewTrayContextMenuOpen="TrayIcon_PreviewTrayContextMenuOpen">
+            <!-- Set a simple context menu  -->
+            <!-- the data context of the context menu is the NotifyIcon itself (see more about this in DataBinding samples) -->
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="_Show Application Window [S]"
+                              Command="{commands:ShowWindowCommand}"
+                              CommandParameter="{Binding}">
+                        <MenuItem.Icon>
+                            <Image Width="16"
+                                   Height="16"
+                                   Source="Images/Add.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="_Close Application [C]"
+                              Command="{commands:CloseWindowCommand}"
+                              CommandParameter="{Binding}">
+                        <MenuItem.Icon>
+                            <Image Width="16"
+                                   Height="16"
+                                   Source="Images/Close.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <!--<Separator />
+                    <MenuItem Header="_Hide Sample Window [H]"
+                              Command="{commands:HideSampleWindowCommand}"
+                              CommandParameter="{Binding}">
+                        <MenuItem.Icon>
+                            <Image Width="16"
+                                   Height="16"
+                                   Source="Images/Remove.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>-->
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+        <TextBox x:Name="tbTraceOutput" 
+                 VerticalScrollBarVisibility="Auto" 
+                 VerticalContentAlignment="Stretch" 
+                 HorizontalContentAlignment="Stretch" 
+                 ScrollViewer.CanContentScroll="True" 
+                 UseLayoutRounding="False" 
+                 FontFamily="Courier New"
+                 TextWrapping="Wrap"
+                 TextChanged="tbTraceOutput_TextChanged" />
+    </Grid>
+</Window>
