@@ -175,7 +175,7 @@ namespace MagicToolBox.LunchTray {
 
                         // Show Notification 
                         var msg = new NotificationMessage() { BalloonText = $"Time Away: {tsAway.ToString(@"hh\:mm\:ss")}" };
-                        this.TrayIcon.ShowCustomBalloon(msg, PopupAnimation.Slide, 10000);
+                        this.TrayIcon.ShowCustomBalloon(msg, PopupAnimation.Slide, 7000);
 
                         break;
                 }

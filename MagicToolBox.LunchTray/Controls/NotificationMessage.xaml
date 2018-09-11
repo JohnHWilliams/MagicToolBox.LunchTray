@@ -180,7 +180,7 @@
                Height="16"
                Source="/Resources/Close.png"
                Stretch="Fill"
-               Opacity="0.4"
+               Opacity="1"
                ToolTip="Close Balloon"
                x:Name="imgClose"
                MouseDown="imgClose_MouseDown" />
