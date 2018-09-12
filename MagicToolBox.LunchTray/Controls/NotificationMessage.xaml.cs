@@ -71,6 +71,13 @@ namespace MagicToolBox.LunchTray {
                 var taskbarIcon = TaskbarIcon.GetParentTaskbarIcon(this);
                 taskbarIcon.ResetBalloonCloseTimer();
             }
+            private void me_MouseLeave(object sender, MouseEventArgs e) {
+                this.imgClose.Visibility = Visibility.Visible;
+                //this.Visibility = Visibility.Hidden;
+                //the tray icon assigned this attached property to simplify access
+                var taskbarIcon = TaskbarIcon.GetParentTaskbarIcon(this);
+                taskbarIcon.CloseBalloon();
+            }
             /// <summary>
             /// Closes the popup once the fade-out animation completed.
             /// The animation was triggered in XAML through the attached

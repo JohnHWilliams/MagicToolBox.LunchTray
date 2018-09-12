@@ -4,7 +4,7 @@
              xmlns:tb="http://www.hardcodet.net/taskbar"
              x:Name="me"
              Height="120"
-             Width="240">
+             Width="240" MouseLeave="me_MouseLeave">
     <UserControl.Resources>
         <Storyboard x:Key="FadeIn">
             <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
@@ -87,6 +87,10 @@
         </EventTrigger>
     </UserControl.Triggers>
     <Grid x:Name="grid" MouseEnter="grid_MouseEnter">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
         <Border
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -147,7 +151,7 @@
         <TextBlock
             VerticalAlignment="Top"
             HorizontalAlignment="Left"
-            Margin="10,10"                        
+            Margin="10,10,0,0"                        
             FontSize="20"
             FontWeight="Bold"
             Text="Lunch Tray" 
@@ -159,7 +163,7 @@
         <TextBlock
             VerticalAlignment="Top"
             HorizontalAlignment="Left"
-            Margin="12,33"                        
+            Margin="12,33,0,0"                        
             FontSize="8.5"
             FontWeight="Bold"
             Foreground="#FF0BAFEC"
@@ -180,7 +184,6 @@
                Height="16"
                Source="/Resources/Close.png"
                Stretch="Fill"
-               Opacity="1"
                ToolTip="Close Balloon"
                x:Name="imgClose"
                MouseDown="imgClose_MouseDown" />
