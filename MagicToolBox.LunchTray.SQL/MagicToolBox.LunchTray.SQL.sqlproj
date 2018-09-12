@@ -75,6 +75,8 @@
     <Build Include="Stored Procedures\dbo.SessionEventLog_Insert.sql" />
     <Build Include="Security\tool.sql" />
     <None Include="Scripts\Script.Insert.SessionEventTypes.sql" />
+    <Build Include="Stored Procedures\rpt.SessionEventLog_SummaryDetail.sql" />
+    <Build Include="Security\rpt.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
