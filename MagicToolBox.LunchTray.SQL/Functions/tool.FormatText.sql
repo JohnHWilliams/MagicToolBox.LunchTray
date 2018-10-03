@@ -18,18 +18,17 @@ Create Function tool.FormatText (
 Returns nVarChar(4000)
 As
 Begin
--------------------------------------------------------------------------------
-Declare @Return VarChar(4000)
--- Loop Iteration Variables
+--------------------------------------------------------------------------------
+Declare @Return VarChar(4000) = @Format
+--------------------------------------------------------------------------------
+--- Loop Iteration Variables ---------------------------------------------------
 Declare @ix Int, @Code Int, @Char Char(4)
--- Set Default Output Value
-Set @Return = @Format
--------------------------------------------------------------------------------
--- Parse out any C# style escape characters
-If PatIndex('%\TtNnRrQq%', @Return) > 0
+--------------------------------------------------------------------------------
+-- Parse out any C# style escape characters ------------------------------------
+If PatIndex('%\[TtNnRrQq%]', @Return) > 0
 Begin
   Set @Return = Replace(@Return, '\T', Char(9))  -- Tab
-  Set @Return = Replace(@Return, '\N', Char(10)) -- New Line
+  Set @Return = Replace(@Return, '\N', Char(10)) -- Line Feed
   Set @Return = Replace(@Return, '\R', Char(13)) -- Carriage Return
   -- \Q is custom for this routine only. It's not a valid C# escape character 
   Set @Return = Replace(@Return, '\Q', Char(39)) -- Single quote
@@ -37,18 +36,25 @@ End
 -------------------------------------------------------------------------------
 -- Initialize Loop 
 -- Look for any instances ascii character codes defined explicitly using \000 format
-Set @ix = PatIndex('%\0-90-90-9 %', @Return)
-While @ix > 0
-Begin
-   Set @Char = SubString(@Return, @ix, 4)
-   Set @Code = Right(@Char, 3)
-   -- Valid Ascii Code ?
-   If ( @Code <= 255 )
-   Set @Return = Replace(@Return, @Char, Char(@Code))
-   -- Iterate Loop Next
-   Set @ix = PatIndex('%\0-90-90-9 %', @Return)
-End
+-------------------------------------------------------------------------------
+Select @ix = PatIndex('%\[0-9][0-9][0-9] %', @Return)
+-------------------------------------------------------------------------------
+ While @ix > 0
+ ------------------------------------------------------------------------------
+ Begin
+    ---------------------------------------------------------------------------
+    Select @Char = SubString(@Return, @ix, 4)
+    Select @Code = Right(@Char, 3)
+    -- Do the replacement(s) for any valid Ascii Code 
+    Select @Return = Replace(@Return, @Char, Char(@Code))
+     Where @Code <= 255
+    -- Iterate Loop Next
+    Select @ix = PatIndex('%\[0-9][0-9][0-9] %', @Return)
+    ---------------------------------------------------------------------------
+ End
 -------------------------------------------------------------------------------
 Return @Return
 -------------------------------------------------------------------------------
 End
+GO
+Select Theory = tool.FormatText('E=MC\253')

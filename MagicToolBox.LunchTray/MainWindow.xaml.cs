@@ -33,7 +33,7 @@ namespace MagicToolBox.LunchTray {
                     this.Name = "Trace";
                     this.tbTraceOutput = TB;
                 }
-                public override void Write(string message) {                    
+                public override void Write(string message) {
                     this.tbTraceOutput.AppendText(message);
                 }
                 public override void WriteLine(string message) {
@@ -62,12 +62,12 @@ namespace MagicToolBox.LunchTray {
             private TimeSpan tsWorking { set; get; }
             private TimeSpan tsOnBreak { set; get; }
             DispatcherTimer tmrWork = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1), IsEnabled = true };
-            DispatcherTimer tmrBreak = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1), IsEnabled = true };            
+            DispatcherTimer tmrBreak = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1), IsEnabled = true };
         #endregion
 
         #region " Constructors "
             public MainWindow() {
-                this.InitializeComponent();                
+                this.InitializeComponent();
 
                 // Initialize Property Values
                 this.AppStart = DateTime.Now;
@@ -99,7 +99,7 @@ namespace MagicToolBox.LunchTray {
                 // Save file after every Trace.Write
                 Trace.AutoFlush = true;
                 // Write the first line of the trace to indicate application has started
-                Trace.WriteLine($@"{DateTime.Now:MM/dd/yyyy HH:mm:ss}: Starting App;", "SessionLaunch");
+                Trace.WriteLine($@"{DateTime.Now:MM/dd/yyyy HH:mm:ss} Starting App;", "SessionLaunch");
                 // Hide the form
                 this.ShowInTaskbar = false;
                 this.Visibility = Visibility.Hidden;
@@ -116,7 +116,7 @@ namespace MagicToolBox.LunchTray {
                         e.Cancel = true; // Cancel the event
                         return;
                     case MessageBoxResult.No: // App will be closing therefore we want to end the work done and create the audit record
-                        this.CloseApp();                        
+                        this.CloseApp();
                         break;
                 }
             }
@@ -152,7 +152,7 @@ namespace MagicToolBox.LunchTray {
                         this.ActiveEvent.Message = $@"{DateTime.Now:MM/dd/yyyy HH:mm:ss}; Starting Break; Time Worked: {tsWork:dd\:hh\:mm\:ss}; {e.Reason.ToString()}";
 
                         // Save the Event to the database
-                        this.SessionEventLog_Insert(this.ActiveEvent);                        
+                        this.SessionEventLog_Insert(this.ActiveEvent);
                         
                         break;
                     case SessionSwitchReason.SessionUnlock:

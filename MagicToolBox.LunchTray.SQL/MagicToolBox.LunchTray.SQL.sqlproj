@@ -65,6 +65,8 @@
     <Folder Include="Stored Procedures\" />
     <Folder Include="Security\" />
     <Folder Include="Scripts" />
+    <Folder Include="Views" />
+    <Folder Include="%40Deployment" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\dbo.SessionEventTypes.sql" />
@@ -77,11 +79,14 @@
     <None Include="Scripts\Script.Insert.SessionEventTypes.sql" />
     <Build Include="Stored Procedures\rpt.SessionEventLog_SummaryDetail.sql" />
     <Build Include="Security\rpt.sql" />
+    <Build Include="Views\views.SessionEventLog_WorkDays.sql" />
+    <Build Include="Security\views.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="MagicToolBox.LunchTray.SQL.publish.xml" />
+    <None Include="@Deployment\Update Project From LocalDB.scmp" />
+    <None Include="%40Deployment\MagicToolBox.LunchTray.SQL.publish.xml" />
   </ItemGroup>
 </Project>

@@ -3,3 +3,8 @@ C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQ
 C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQL\obj\Debug\MagicToolBox.LunchTray.SQL.pdb
 C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQL\bin\Debug\MagicToolBox.LunchTray.SQL.dll
 C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQL\bin\Debug\MagicToolBox.LunchTray.SQL.pdb
+C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQL\obj\Debug\MagicToolBox.LunchTray.SQL.sqlprojAssemblyReference.cache
+C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQL\obj\Debug\Model.xml
+C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQL\obj\Debug\refactor.xml
+C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQL\obj\Debug\postdeploy.sql
+C:\Users\JWilliams\source\repos\MagicToolBox.LunchTray\MagicToolBox.LunchTray.SQL\obj\Debug\predeploy.sql

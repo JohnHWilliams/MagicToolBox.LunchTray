@@ -16,12 +16,12 @@ Create Function tool.FormatString1 (
  ,@Arg0 VarChar(Max)
 )
 --------------------------------------------------------------------------------
-Returns VarChar(Max)
-As
+Returns VarChar(Max) As
+---------------------------------------------------------------------------------
 Begin
 ---------------------------------------------------------------------------------
--- Make a call to the normal 3 argument formatString
-Return tool.FormatString(@Format, @Arg0, Default, Default)
+   -- Make a call to the normal 3 argument tool.FormatString
+   Return tool.FormatString(@Format, @Arg0, Default, Default)
 ---------------------------------------------------------------------------------
 End
 ---------------------------------------------------------------------------------
