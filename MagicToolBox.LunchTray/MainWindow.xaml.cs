@@ -68,6 +68,8 @@ namespace MagicToolBox.LunchTray {
 
         #region " Constructors "
             public MainWindow() {
+                this.InitializeComponent();
+
                 // Initialize Property Values
                 this.AppStart = DateTime.Now;
                 this.SysUnLock = DateTime.Now;  // Set this to Now to keep the logic simple later
@@ -75,37 +77,30 @@ namespace MagicToolBox.LunchTray {
                 // Add Event Handlers
                 SystemEvents.SessionSwitch += this.SystemEvents_SessionSwitch;
                 this.tmrWorking.Tick += this.tmrWorking_Tick;
-                this.tmrOnBreak.Tick += this.tmrOnBreak_Tick;                
-
-                // Initialize Timers
-                this.tsWorking = new TimeSpan();
-                this.tsOnBreak = new TimeSpan();
-
-                // Start the Working timer
-                this.tmrWorking.Start();
-
+                this.tmrOnBreak.Tick += this.tmrOnBreak_Tick;
+                
                 // Set the current event start to indicate we're beginning a period where the workstation is unlocked (Actively Working/At Workstation/NOT on break)
                 this.ActiveEvent = new SessionEvent() { Start = this.AppStart };
+
+                // Start Working Timer
+                this.tmrWorking.Start();
             }
         #endregion
 
         #region " Events"
             private void wpfMainWindow_Loaded(object sender, RoutedEventArgs e) {
-                // Initialize Tracing
-                this.Tracing_Init();
-                // Show "App Started" Notification Message
-                var msg = new NotificationMessage() { BalloonText = $"LunchTray Started: {DateTime.Now:HH:mm:ss}" };
-                this.TrayIcon.ShowCustomBalloon(msg, PopupAnimation.Slide, 7000);
-
-                // Go ahead and create a login event to the database
-                this.ActiveEvent.EventTypeID = SessionSwitchReason.SessionLogon;
-                this.ActiveEvent.Start = DateTime.Now;
-                this.ActiveEvent.Ended = DateTime.Now;
-                this.ActiveEvent.Message = $@"{DateTime.Now:MM/dd/yyyy ddd - HH:mm:ss}; #LoggedIn";
-
-                // Save the Event to the database and it will create a new open ended event 
-                this.SessionEventLog_Insert(this.ActiveEvent);                
-
+                // Add Trace Listener To Update TextBox / Notification
+                using (var tw = new TextBoxTraceListener(this.tbTraceOutput)) {
+                    Trace.Listeners.Add(tw);
+                }
+                // Add Trace Listner To Update the Text File
+                using (var tw = new TextWriterTraceListener($@"{cfg.AppSettings["TracePath"]}{this.TraceFileName}", "DefaultFile")) {
+                    Trace.Listeners.Add(tw);
+                }
+                // Save file after every Trace.Write
+                Trace.AutoFlush = true;
+                // Write the first line of the trace to indicate application has started
+                Trace.WriteLine($@"{DateTime.Now:MM/dd/yyyy HH:mm:ss} Starting App;", "SessionLaunch");
                 // Hide the form
                 this.ShowInTaskbar = false;
                 this.Visibility = Visibility.Hidden;
@@ -244,7 +239,7 @@ namespace MagicToolBox.LunchTray {
 
                 // Update relative DateTime properties
                 this.SysLogOff = DateTime.Now;
-                var tsWork = (this.SysLogOff.Value - (this.SysUnLock ?? this.AppStart));
+                var tsWork = (this.SysLogOff.Value - this.SysUnLock.Value);
 
                 // App will be closing therefore we want to end the work done and create the audit record
                 // We're ending a period where the workstation was unlocked ( NOT on break )
@@ -259,20 +254,6 @@ namespace MagicToolBox.LunchTray {
                 this.ShowInTaskbar = false;
                 this.Visibility = Visibility.Hidden;
                 this.Hide();
-            }
-            private void Tracing_Init() {
-                // Add Trace Listener To Update TextBox / Notification
-                using (var tw = new TextBoxTraceListener(this.tbTraceOutput)) {
-                    Trace.Listeners.Add(tw);
-                }
-                // Add Trace Listner To Update the Text File
-                using (var tw = new TextWriterTraceListener($@"{cfg.AppSettings["TracePath"]}{this.TraceFileName}", "DefaultFile")) {
-                    Trace.Listeners.Add(tw);
-                }
-                // Save file after every Trace.Write
-                Trace.AutoFlush = true;
-                // Write the first line of the trace to indicate application has started
-                Trace.WriteLine($@"{DateTime.Now:MM/dd/yyyy HH:mm:ss} Starting App;", "SessionLaunch");
             }
             private void SessionEventLog_Insert(SessionEvent e) {
                 using (var DB = new SqlConnection(cfg.ConnectionStrings["App.SQL"].ToString())) {
