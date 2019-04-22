@@ -1,0 +1,31 @@
+﻿** Highlights
+     Tables that will be rebuilt
+       [dbo].[SessionEventLog]
+     Clustered indexes that will be dropped
+       None
+     Clustered indexes that will be created
+       None
+     Possible data issues
+       None
+
+** User actions
+     Create
+       [rpt] (Schema)
+       [views] (Schema)
+       [views].[SessionEventLog_WorkDays] (View)
+       [rpt].[SessionEventLog_SummaryDetail] (Procedure)
+     Table rebuild
+       [dbo].[SessionEventLog] (Table)
+     Alter
+       [tool].[FormatText] (Function)
+       [tool].[FormatString] (Function)
+       [tool].[FormatString1] (Function)
+       [dbo].[SessionEventLog_Insert] (Procedure)
+
+** Supporting actions
+     Drop
+       [dbo].[DF_SessionEventLog_Billable] (Default Constraint)
+       [dbo].[DF_SessionEventLog_Start] (Default Constraint)
+       [dbo].[FK_SessionEventLog_EventTypeID] (Foreign Key)
+     Create
+       [dbo].[FK_SessionEventLog_EventTypeID] (Foreign Key)

@@ -171,7 +171,7 @@
          />
         <TextBlock 
             VerticalAlignment="Stretch"
-            HorizontalAlignment="Stretch"
+            HorizontalAlignment="Stretch"            
             Margin="12,50,12,20"            
             Text="{Binding Path=BalloonText, ElementName=me, Mode=Default}"
             TextWrapping="Wrap"

@@ -29,8 +29,8 @@ namespace MagicToolBox.LunchTray {
             /// Description
             /// </summary>
             public string BalloonText {
-                get { return (string)this.GetValue(BalloonTextProperty); }
-                set { this.SetValue(BalloonTextProperty, value); }
+                get { return this.GetValue(BalloonTextProperty).ToString(); } 
+                set { this.SetValue(BalloonTextProperty, value.Replace("<newline/>", Environment.NewLine)); }
             }
         #endregion
 

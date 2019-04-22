@@ -44,6 +44,7 @@ namespace MagicToolBox.LunchTray {
 
         #region " Proerties "
             internal DateTime AppStart { get; private set; }
+            internal DateTime? PunchIn { get; private set; }
             internal DateTime? SysLocked { get; private set; }
             internal DateTime? SysUnLock { get; private set; }
             internal DateTime? SysLogOn { get; private set; }
@@ -59,10 +60,10 @@ namespace MagicToolBox.LunchTray {
                 }
             }            
             private SessionEvent ActiveEvent { set; get; }
-            private TimeSpan tsWorking { set; get; }
-            private TimeSpan tsOnBreak { set; get; }
-            DispatcherTimer tmrWork = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1), IsEnabled = true };
-            DispatcherTimer tmrBreak = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1), IsEnabled = true };
+            private TimeSpan tsWorking { set; get; } = new TimeSpan();
+            private TimeSpan tsOnBreak { set; get; } = new TimeSpan();
+            DispatcherTimer tmrWorking = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1) };
+            DispatcherTimer tmrOnBreak = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1) };
         #endregion
 
         #region " Constructors "
@@ -75,14 +76,14 @@ namespace MagicToolBox.LunchTray {
 
                 // Add Event Handlers
                 SystemEvents.SessionSwitch += this.SystemEvents_SessionSwitch;
-                this.tmrWork.Tick += this.tmrWork_Tick;
-                this.tmrBreak.Tick += this.tmrBreak_Tick;
+                this.tmrWorking.Tick += this.tmrWorking_Tick;
+                this.tmrOnBreak.Tick += this.tmrOnBreak_Tick;
                 
                 // Set the current event start to indicate we're beginning a period where the workstation is unlocked (Actively Working/At Workstation/NOT on break)
                 this.ActiveEvent = new SessionEvent() { Start = this.AppStart };
 
                 // Start Working Timer
-                this.tmrWork.Start();
+                this.tmrWorking.Start();
             }
         #endregion
 
@@ -135,59 +136,88 @@ namespace MagicToolBox.LunchTray {
             }
             private void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e) {
                 switch (e.Reason) {
-                    case SessionSwitchReason.SessionLock:
                     case SessionSwitchReason.SessionLogoff:
-                        // Work Stops & Break Begins
-                        this.tmrWork.Stop();  // Work Stops
-                        this.tmrBreak.Start(); // Break Begins
-
-                        // Update relative DateTime properties
+                        this.CloseApp(); // The code in here will write the events
+                        break;
+                    case SessionSwitchReason.SessionLock:
+                        // Update relative DateTime properties                        
                         this.SysLocked = DateTime.Now;
-                        if (e.Reason == SessionSwitchReason.SessionLogoff) this.SysLogOff = DateTime.Now;
-                        var tsWork = (this.SysLocked.Value - this.SysUnLock.Value); // Initialized UnLock DateTime Value on construct so it's safe to use this and not worry about logic to figure it out
+                        
+                        // Stop the Working timer
+                        this.tmrWorking.Stop();
+
+                        // Start the OnBreak Timer
+                        this.tmrOnBreak.Start();
 
                         // We're ending a period where the workstation was unlocked ( NOT on break )
                         this.ActiveEvent.EventTypeID = e.Reason;
                         this.ActiveEvent.Ended = DateTime.Now;
-                        this.ActiveEvent.Message = $@"{DateTime.Now:MM/dd/yyyy HH:mm:ss}; Starting Break; Time Worked: {tsWork:dd\:hh\:mm\:ss}; {e.Reason.ToString()}";
+                        this.ActiveEvent.Message = $@"{DateTime.Now:MM/dd/yyyy HH:mm:ss}; Starting Break; Time Worked: {this.tsWorking:dd\:hh\:mm\:ss}; [{e.Reason.ToString()}]";
 
                         // Save the Event to the database
                         this.SessionEventLog_Insert(this.ActiveEvent);
                         
                         break;
+                    case SessionSwitchReason.SessionLogon:  // HACK: Capturing LogON UNLIKELY as the app will only be able to start AFTER logging on soooo..... (??)
                     case SessionSwitchReason.SessionUnlock:
-                    case SessionSwitchReason.SessionLogon:  // TODO: Capturing LogON UNLIKELY as the app will only be able to start AFTER logging on soooo..... (??)
-                        // Work Starts & Break Ends
-                        this.tmrBreak.Stop();  // Break Over
-                        this.tmrWork.Start();  // Work Begins
-
-                        // Update relative DateTime properties
+                        // Update the UnLock variable
                         this.SysUnLock = DateTime.Now;
-                        var tsAway = (this.SysUnLock.Value - this.SysLocked.Value);
 
-                        // We're ending a period where the workstation was locked ( WAS ON break )
-                        this.ActiveEvent.EventTypeID = e.Reason;
-                        this.ActiveEvent.Ended = DateTime.Now;
-                        this.ActiveEvent.Message = $@"{DateTime.Now:MM/dd/yyyy HH:mm:ss}; Starting Work; Time Away: {tsAway:dd\:hh\:mm\:ss}; {e.Reason.ToString()}";
+                        // Stop the break timer
+                        this.tmrOnBreak.Stop();  // Break Over
 
-                        // Save the Event to the database
-                        this.SessionEventLog_Insert(this.ActiveEvent);
+                        // Check the two values to determine if the workstation has been locked a day or more (overnight or over the weekend) meaning that it would be today's Punch In and not a break
+                        if (this.SysUnLock.Value.Date > this.SysLocked.Value.Date) {
+                            // This indicates the first UnLock of the day which means that we need to reset the tsWorking & tsOnBreak TimeSpans for the day
+                            this.tsWorking = new TimeSpan();
+                            this.tsOnBreak = new TimeSpan();
 
-                        // Show Notification 
-                        var msg = new NotificationMessage() { BalloonText = $"Time Away: {tsAway.ToString(@"hh\:mm\:ss")}" };
-                        this.TrayIcon.ShowCustomBalloon(msg, PopupAnimation.Slide, 7000);
+                            // Start the Working timer
+                            this.tmrWorking.Start();
 
+                            // Update the PunchIn time for today
+                            this.PunchIn = DateTime.Now; 
+
+                            // Go ahead and write the punch in event to the database
+                            this.ActiveEvent.EventTypeID = SessionSwitchReason.SessionLogon;
+                            this.ActiveEvent.Start = this.SysUnLock.Value;
+                            this.ActiveEvent.Ended = this.SysUnLock.Value;
+                            this.ActiveEvent.Message = $@"{DateTime.Now:MM/dd/yyyy ddd - HH:mm:ss}; #PunchIn";
+
+                            // Save the Event to the database
+                            this.SessionEventLog_Insert(this.ActiveEvent);
+
+                            // Show "Welcome Back From Break" Notification Message
+                            var msg = new NotificationMessage() { BalloonText = $"Punching In: {DateTime.Now:HH:mm:ss}" };
+                            this.TrayIcon.ShowCustomBalloon(msg, PopupAnimation.Slide, 7000);
+                        } else {
+                            // We're ending a period where the workstation was locked today ( On Break )
+                            this.tmrWorking.Start(); // UnPause the timer
+
+                            // Just get the time away for THIS break and leave tsOnBreak for total for the day
+                            var tsAway = (this.SysUnLock.Value - this.SysLocked.Value);
+
+                            // Set the remaining event information
+                            this.ActiveEvent.EventTypeID = e.Reason;
+                            this.ActiveEvent.Ended = DateTime.Now;
+                            this.ActiveEvent.Message = $@"{DateTime.Now:MM/dd/yyyy HH:mm:ss}; Starting Work; Time Away: {tsAway:dd\:hh\:mm\:ss}; [{e.Reason.ToString()}]";
+
+                            // Save the Event to the database and start the next ActiveEvent
+                            this.SessionEventLog_Insert(this.ActiveEvent);
+
+                            // Show "Welcome Back From Break" Notification Message
+                            var msg = new NotificationMessage() { BalloonText = $@"Time OnBreak: {tsAway:hh\:mm\:ss}<newline/>Time Working: {this.tsWorking:hh\:mm\:ss}" };
+                            this.TrayIcon.ShowCustomBalloon(msg, PopupAnimation.Slide, 7000);
+                        }
                         break;
                 }
             }
-            private void tmrWork_Tick(object sender, EventArgs e) {
-                // Refresh the working timespan
-                this.tsWorking = (DateTime.Now - this.SysUnLock.Value);
-                this.TrayIcon.ToolTipText = $@"Time Worked: {tsWorking:dd\:hh\:mm\:ss}";
+            private void tmrWorking_Tick(object sender, EventArgs e) {
+                this.tsWorking = this.tsWorking.Add(this.tmrWorking.Interval);
+                this.TrayIcon.ToolTipText = $@"Time Worked: {this.tsWorking:hh\:mm\:ss}; Total Breaks: {this.tsOnBreak:dd\:hh\:mm\:ss}";
             }
-            private void tmrBreak_Tick(object sender, EventArgs e) {
-                // Refresh the on break timespan
-                this.tsOnBreak = this.SysLocked.HasValue ? (DateTime.Now - this.SysLocked.Value) : (DateTime.Now - DateTime.Now);
+            private void tmrOnBreak_Tick(object sender, EventArgs e) {
+                this.tsOnBreak = this.tsOnBreak.Add(this.tmrOnBreak.Interval);
             }
         #endregion
 
@@ -205,7 +235,7 @@ namespace MagicToolBox.LunchTray {
             }
             private void CloseApp() {
                 // Work Stops
-                this.tmrWork.Stop();
+                this.tmrWorking.Stop();
 
                 // Update relative DateTime properties
                 this.SysLogOff = DateTime.Now;
@@ -252,7 +282,7 @@ namespace MagicToolBox.LunchTray {
                     DB.Close();
                 }
                 // Trace the event to the text file
-                Trace.WriteLine(this.ActiveEvent.Message);
+                Trace.WriteLine(e.Message);
                 // Start the next event
                 this.ActiveEvent = new SessionEvent() { Start = e.Ended };
             }

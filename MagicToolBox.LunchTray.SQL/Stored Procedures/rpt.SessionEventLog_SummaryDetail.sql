@@ -18,45 +18,68 @@ Date          Author    Description
                         • Updated EventSummary to use a new view that was added to simplify the EventSummary query
 ================================================================================ */
 Create Proc rpt.SessionEventLog_SummaryDetail
-  @Week Int
- ,@Year Int = 2018
- ,@BreakMin Int = 10 -- Set a threshold for minimum break length 
+  @Week Int = Null
+ ,@Year Int = Null
+ ,@BreakMin Int = 5 -- Set a threshold for minimum break length 
 As
 --------------------------------------------------------------------------------
 Set NoCount On
 --------------------------------------------------------------------------------
+Select @Week = IsNull(@Week, DatePart(Week, GetDate()))
+      ,@Year = ISNull(@Year, DatePart(Year, GetDate()))
+--------------------------------------------------------------------------------
+RaisError('@Week: %i; @Year: %i; @BreakMin', 0, 0, @Week, @Year, @BreakMin)
+--------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+--Char(32)
 --------------------------------------------------------------------------------
 EventSummary: ------------------------------------------------------------------
 --------------------------------------------------------------------------------
-Select WeekNum = Convert(Char(8), @Week)
+Select WeekNum = Convert(Char(8), DatePart(wk, w.WorkDate))
       ,DayName = Convert(Char(8), Format(w.WorkDate, 'ddd'))
       ,WorkDate = Convert(Char(12), w.WorkDate)
        -------------------------------------------------------------------------
-      ,DayStart = Format(w.DayStart, 'HH:mm')
-      ,DayEnded = Format(w.DayEnded, 'HH:mm')
-      ,w.DayLength
+      ,DayStart = Convert(Char(10), Format(w.DayStart, 'HH:mm'))
+      ,DayEnded = Convert(Char(10), Format(w.DayEnded, 'HH:mm'))
+      ,DayLength = Convert(Char(10), w.DayLength)
        -------------------------------------------------------------------------
-      ,BreaksTotal = Format(Floor(Sum(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) / 3600.00), '00:') -- Hours (Add all seconds up / 3600)
-                   + Format(Sum(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) % 3600.00 / 60, '00')       -- Minutes (Add all seconds up % 3600 / 60)
-      ,BilledTotal = Format(Convert(DateTime, w.DayLength)
-                   - Convert(DateTime, Format(Floor(Sum(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) / 3600.00), '00:') 
-                                     + Format(Sum(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) % 3600.00 / 60, '00')
-                     ), 'HH:mm')
+      ,BreaksCount = Count(nb.ID)
+       -------------------------------------------------------------------------
+      ,BreakTotals = Convert(Char(10),
+                        Format(Floor(Sum(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) / 3600.00), '00:') -- Hours (Add all seconds up / 3600)
+                      + Format(Sum(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) % 3600.00 / 60, '00')    -- Minutes (Add all seconds up % 3600 / 60)
+                     )
+                     ----------------------------------------------------------
+      ,BreakAverage =Convert(Char(10), 
+                        Format(Floor(Avg(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) / 3600.00), '00:') -- Hours (Add all seconds up / 3600)
+                      + Format(Avg(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) % 3600.00 / 60, '00')    -- Minutes (Add all seconds up % 3600 / 60)
+                     )
+                     ----------------------------------------------------------
+      ,BreakStDev = Format(StDev(DateDiff(mi, nb.Start, nb.Ended)), '0.00 Minutes')
+                     ----------------------------------------------------------
+      ,BilledTotal = Convert(Char(10), 
+                        Format(Convert(DateTime, w.DayLength)
+                      - Convert(DateTime, Format(Floor(Sum(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) / 3600.00), '00:') 
+                                        + Format(Sum(IsNull(DateDiff(ss, nb.Start, nb.Ended), 0)) % 3600.00 / 60, '00')
+                        ), 'HH:mm')
+                     )
 --------------------------------------------------------------------------------
   From views.SessionEventLog_WorkDays w
 --------------------------------------------------------------------------------
---- Join to find break time totals ---------------------------------------------
+--- Join to find break time totals  ---------------------------------------------
 --------------------------------------------------------------------------------
   Left Join dbo.SessionEventLog nb
     On Convert(Date, nb.Start) = w.WorkDate
    And Convert(Date, nb.Ended) = w.WorkDate
-   And Not ( DateDiff(mi, nb.Start, nb.Ended) < @BreakMin )-- Only Count Breaks > 10 Minutes
+   -- 2 minutes here, 4 minutes there aren't really "breaks"
+   And Not ( DateDiff(mi, nb.Start, nb.Ended) < IsNull(@BreakMin, 10) ) -- Only Count Breaks > 10 Minutes
    And nb.Billable = 0 -- Anything not Billable is considered a break
 --------------------------------------------------------------------------------
  Where Year(w.WorkDate) = @Year          -- The year we want data from
    And DatePart(wk, w.WorkDate) = @Week  -- The Week we want data for
---------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              --------------------------------------------------------------------------------
+    Or ( @Year = 2019 And @Week = 1 And w.WorkDate = '12/31/2018' ) -- JHW: Got lazy and ran out of ideas about how to handle the week that ends the year so I just hard coded it until next year (When I will likely do the same thing!)
+--------------------------------------------------------------------------------
  Group By
        w.WorkDate
       ,w.DayStart
@@ -64,7 +87,8 @@ Select WeekNum = Convert(Char(8), @Week)
       ,w.DayLength
 --------------------------------------------------------------------------------
  Order By
-       w.WorkDate
+       WeekNum Desc
+      ,WorkDate
 --------------------------------------------------------------------------------
 
 
@@ -82,32 +106,31 @@ Select EventID = e.ID
        -------------------------------------------------------------------------
       ,ValidBreak = Case
                       ----------------------------------------------------------
-                      When e.Billable = 0
-                       And Not ( DateDiff(mi, e.Start, e.Ended) < @BreakMin )
+                      When DateDiff(mi, e.Start, e.Ended) >= @BreakMin
+                       And e.Billable = 0
                       Then 'YES'
                       ----------------------------------------------------------
                       When e.Billable = 1
-                      Then ''
+                      Then 'N/A'
                       ----------------------------------------------------------
                       Else 'NO'
                       ----------------------------------------------------------
                    End
        -------------------------------------------------------------------------
+      ,EventType = t.Name
       ,EventStart = Convert(Char(18), Format(e.Start, 'MM/dd/yyyy HH:mm'))
       ,EventEnded = Convert(Char(18), Format(e.Ended, 'MM/dd/yyyy HH:mm'))
-      ,EventLength = Convert(Char(3), Format(Format(e.Ended - e.Start, 'dd') - 1, '00:'))
-                   + Convert(Char(10), Format(e.Ended - e.Start, 'HH:mm:ss'))
-      ,EventMessage = Convert(Char(80), e.Message)
+      ,EventLength = Convert(Char(10), Format(e.Ended - e.Start, 'HH:mm:ss'))
+      ,EventMessage = Convert(Char(150), e.Message)
 --------------------------------------------------------------------------------
   From dbo.SessionEventLog e
 --------------------------------------------------------------------------------
   Left Join dbo.SessionEventTypes t
     On t.ID = e.EventTypeID
 --------------------------------------------------------------------------------
- Where DatePart(wk, e.Start) = @Week  -- Get data for the selected week
-   --And ( e.Billable = 0 And Not ( DateDiff(mi, e.Start, e.Ended) < @BreakMin )-- Only Count Breaks > 10 Minutes
-   --   Or e.Billable = 1
-   --)
+ Where Year(e.Start) = @Year          -- The year we want data from
+   And DatePart(wk, e.Start) = @Week  -- The Week we want data for
+    Or ( @Year = 2019 And @Week = 1 And Convert(Date, e.Start) = '12/31/2018' ) -- JHW: Got lazy and ran out of ideas about how to handle the week that ends the year so I just hard coded it until next year (When I will likely do the same thing!)
 --------------------------------------------------------------------------------
  Order By
        EventID
