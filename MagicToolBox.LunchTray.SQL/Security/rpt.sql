@@ -1,1 +1,3 @@
-﻿Create Schema rpt Authorization dbo;
+﻿CREATE SCHEMA [rpt]
+    AUTHORIZATION [dbo];
+
